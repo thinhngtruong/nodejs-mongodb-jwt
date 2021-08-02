@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 
 const initAPIs = require("./routes");
 const { DB_URI } = require("./config/DB.config");
+const LoggerMiddleware = require('./middleware/LoggerMiddleware');
 
 dotenv.config();
 
@@ -22,6 +23,8 @@ db.once("open", function () {
 const app = express();
 
 app.use(express.json());
+
+app.use(LoggerMiddleware);
 
 initAPIs(app);
 

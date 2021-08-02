@@ -1,4 +1,4 @@
-const jwtHelper = require("../helpers/jwt.helper");
+const jwtHelper = require("../helpers/JWT.helper");
 const debug = console.log.bind(console);
 // secretKey saved in file or env variable
 const { ACCESS_TOKEN_SECRET } = require("../config/JWT.config");
