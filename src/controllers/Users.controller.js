@@ -2,63 +2,81 @@ const jwtHelper = require("../helpers/JWT.helper");
 const userService = require("../services/Users.service");
 const {
 	ACCESS_TOKEN_LIFE,
-    ACCESS_TOKEN_SECRET,
-    REFRESH_TOKEN_LIFE,
-    REFRESH_TOKEN_SECRET
+	ACCESS_TOKEN_SECRET,
+	REFRESH_TOKEN_LIFE,
+	REFRESH_TOKEN_SECRET
 } = require("../config/JWT.config");
 
-const create = (req, res, next) => {
+const create = async (req, res, next) => {
 	const { username, password } = req.body;
 	if (!username) {
-		res.status(400).json({ message: "Please not enter empty string username" });
-		return;
+		return res.status(400).json({ message: "Please not enter empty string username" });
 	}
 	if (!password) {
-		res.status(400).json({ message: "Please not enter empty string password" });
-		return;
+		return res.status(400).json({ message: "Please not enter empty string password" });
 	}
-	userService
-		.findUserByUsername(username)
-		.then(foundUser => {
-			if (foundUser) {
-				res.status(400).json({ message: "Username is existing" });
-				return next();
-			}
 
-			return userService.createUser({ username, password }).then(async (user) => {
-				const accessToken = await jwtHelper.generateToken(user.toJSON(), ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE);
-				const refreshToken = await jwtHelper.generateToken(user.toJSON(), REFRESH_TOKEN_SECRET, REFRESH_TOKEN_LIFE);
+	try {
+		const foundUser = await userService.findUserByUsername(username);
+		if (foundUser) {
+			res.status(400).json({ message: "Username is existing" });
+			return next();
+		}
 
-				return res.status(200).json({ accessToken, refreshToken });
-			});
-		})
-		.catch(err => {
-			console.log(err);
-			res.status(500).json({ message: "Internal server error" });
+		return userService.createUser({ username, password }).then(async (user) => {
+			const accessToken = await jwtHelper.generateToken(user.toJSON(), ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE);
+			const refreshToken = await jwtHelper.generateToken(user.toJSON(), REFRESH_TOKEN_SECRET, REFRESH_TOKEN_LIFE);
+
+			return res.status(200).json({ accessToken, refreshToken });
 		});
+	} catch (err) {
+		next(err)
+	}
 }
 
-const findAll = (req, res) => {
-	userService
-		.getAllUsers()
-		.then(userList => res.json(userList))
-		.catch(err => {
-			res.send(err);
-		});
+const findAll = async (req, res, next) => {
+	try {
+		const userList = await userService.getAllUsers();
+		res.json(userList);
+	} catch (err) {
+		next(err)
+	}
 };
 
-const findById = async (req, res) => {
+const findById = async (req, res, next) => {
 	const { userId } = req.params;
-	userService
-		.findUserById(userId)
-		.then(user => {
-			res.json(user);
-		})
-		.catch(err => res.send(err));
+	try {
+		const user = await userService.findUserById(userId);
+		res.json(user);
+	} catch (err) {
+		next(err)
+	}
+};
+
+const findByUsername = async (req, res, next) => {
+	const { username } = req.params;
+	try {
+		const user = await userService.findUserByUsername(username)
+		res.json(user);
+	} catch (err) {
+		next(err)
+	}
+};
+
+const deleteById = async (req, res, next) => {
+	const { userId } = req.params
+	try {
+		const user = await userService.deleteUserById(userId)
+		res.json(user);
+	} catch (err) {
+		next(err)
+	}
 };
 
 module.exports = {
 	create,
 	findAll,
-	findById
+	findById,
+	findByUsername,
+	deleteById
 }

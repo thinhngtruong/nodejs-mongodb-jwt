@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const AuthMiddleWare = require("../middleware/AuthMiddleware");
-const AuthController = require("../controllers/Auth.controller");
+const authRouter = require("./Authentication.route");
 const tasksRouter = require("./Tasks.route");
 const usersRouter = require("./Users.route");
 /**
@@ -9,13 +9,13 @@ const usersRouter = require("./Users.route");
  * @param {*} app from express
  */
 let initAPIs = (app) => {
-	router.post("/login", AuthController.login);
-	router.post("/refresh-token", AuthController.refreshToken);
+	// Lists Public API
+	router.use("/authentication", authRouter);
 	router.use("/users", usersRouter);
 	router.use(AuthMiddleWare.isAuth);
-	
+
+	// List Protected APIs:
 	router.use("/tasks", tasksRouter);
-	// List Protect APIs:
 	return app.use("/api", router);
 }
 

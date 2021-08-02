@@ -1,32 +1,23 @@
 const User = require("../models/Users.model");
 
-const createUser = ({ username, password }) => {
+// TODO: hash password
+const createUser = async ({ username, password }) => {
 	return User.create({
 		username,
 		password
 	})
 }
 
-const findUserByUsername = (username) => {
+const findUserByUsername = async (username) => {
 	return User.findOne({ username: username }).exec();
 };
 
-const getAllUsers = () => {
-	return new Promise((resolve, reject) => {
-		User.find({}, (err, arr) => {
-			if (err) return reject(err);
-			resolve(arr);
-		})
-	})
+const getAllUsers = async () => {
+	return User.find({});
 }
 
-const findUserById = (userId) => {
-	return new Promise((resolve, reject) => {
-		User.findById(userId, (err, user) => {
-			if (err) return reject(err);
-			resolve(user);
-		})
-	})
+const findUserById = async (userId) => {
+	return User.findById(userId);
 }
 
 const deleteUserById = (userId) => {

@@ -1,15 +1,10 @@
 const Task = require("../models/Tasks.model");
 
-const getAllTasks = () => {
-	return new Promise((resolve, reject) => {
-		Task.find({}, (err, tasks) => {
-			if (err) return reject(err);
-			resolve(tasks);
-		});
-	});
+const getAllTasks = async () => {
+	return Task.find({});
 };
 
-const createTask = ({ title, body, userId }) => {
+const createTask = async ({ title, body, userId }) => {
 	return Task.create({
 		title,
 		body,
@@ -18,38 +13,19 @@ const createTask = ({ title, body, userId }) => {
 	});
 }
 
-const findTaskById = (taskId) => {
-	return new Promise((resolve, reject) => {
-		Task.findById(taskId, (err, task) => {
-			if (err) {
-				return reject(err);
-			}
-			resolve(task);
-		});
-	});
+const findTaskById = async (taskId) => {
+	return Task.findById(taskId);
 }
 
-const deleteTaskById = (taskId) => {
-	return new Promise((resolve, reject) => {
-		Task.findByIdAndRemove(taskId, (err, listTask) => {
-			if (err) {
-				return reject(err);
-			}
-			resolve(listTask);
-		});
-	});
+const deleteTaskById = async (taskId) => {
+	return Task.findByIdAndRemove(taskId);
 }
 
 const updateTaskById = (taskID, task) => {
-	return new Promise((resolve, reject) => {
-		if (task.completed) {
-			task.completedAt = new Date();
-		}
-		Task.findByIdAndUpdate(taskID, task, (err, updatedTask) => {
-			if (err) return reject(err);
-			resolve(updatedTask);
-		});
-	});
+	if (task.completed) {
+		task.completedAt = new Date();
+	}
+	return Task.findByIdAndUpdate(taskID, task, { new: true });
 }
 
 module.exports = {

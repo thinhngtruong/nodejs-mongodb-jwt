@@ -4,7 +4,10 @@ const dotenv = require('dotenv');
 
 const initAPIs = require("./routes");
 const { DB_URI } = require("./config/DB.config");
+
+// middleware
 const LoggerMiddleware = require('./middleware/LoggerMiddleware');
+const ErrorHandlerMiddleware = require('./middleware/ErrorHandlerMiddleware');
 
 dotenv.config();
 
@@ -27,6 +30,8 @@ app.use(express.json());
 app.use(LoggerMiddleware);
 
 initAPIs(app);
+
+app.use(ErrorHandlerMiddleware);
 
 const port = process.env.PORT || 8017;
 
