@@ -1,6 +1,5 @@
 const User = require("../models/Users.model");
 
-// TODO: hash password
 const createUser = async ({ username, password }) => {
 	return User.create({
 		username,

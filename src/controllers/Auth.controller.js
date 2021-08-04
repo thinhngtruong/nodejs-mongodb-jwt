@@ -1,11 +1,13 @@
+const bcrypt = require("bcrypt");
+
 const jwtHelper = require("../helpers/JWT.helper");
+const authService = require("../services/Auth.service");
 const {
 	ACCESS_TOKEN_LIFE,
-    ACCESS_TOKEN_SECRET,
-    REFRESH_TOKEN_LIFE,
-    REFRESH_TOKEN_SECRET
+	ACCESS_TOKEN_SECRET,
+	REFRESH_TOKEN_LIFE,
+	REFRESH_TOKEN_SECRET
 } = require("../config/JWT.config");
-const User = require("../models/Users.model");
 
 let tokenList = {};
 
@@ -14,13 +16,13 @@ let tokenList = {};
  * @param {*} req 
  * @param {*} res 
  */
-let login = async (req, res) => {
+let login = async (req, res, next) => {
 	try {
 		const { username, password } = req.body;
-
-		const user = await User.findOne({ username, password });
-		if (!user) {
-			return res.status(400).json({ message: "Wrong user" });
+		const user = await authService.findUserByUsername(username);
+		const validPassword = await bcrypt.compare(password, user?.password || '');
+		if (!user || !validPassword) {
+			return res.status(403).json({ message: "Wrong user or password" });
 		}
 
 		const accessToken = await jwtHelper.generateToken(user.toJSON(), ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE);

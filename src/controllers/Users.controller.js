@@ -1,3 +1,5 @@
+const bcrypt = require("bcrypt");
+
 const jwtHelper = require("../helpers/JWT.helper");
 const userService = require("../services/Users.service");
 const {
@@ -23,7 +25,10 @@ const create = async (req, res, next) => {
 			return next();
 		}
 
-		return userService.createUser({ username, password }).then(async (user) => {
+		const salt = await bcrypt.genSalt(10);
+		const hashPassword = await bcrypt.hash(password, salt);
+
+		return userService.createUser({ username, password: hashPassword }).then(async (user) => {
 			const accessToken = await jwtHelper.generateToken(user.toJSON(), ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE);
 			const refreshToken = await jwtHelper.generateToken(user.toJSON(), REFRESH_TOKEN_SECRET, REFRESH_TOKEN_LIFE);
 
