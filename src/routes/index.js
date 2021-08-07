@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const AuthMiddleWare = require("../middleware/AuthMiddleware");
+const AuthenticationMiddleware = require("../middleware/AuthenticationMiddleware");
 const authRouter = require("./Auth.route");
 const tasksRouter = require("./Tasks.route");
 const usersRouter = require("./Users.route");
@@ -22,9 +22,10 @@ let initAPIs = (app) => {
 
 	router.use("/users", usersRouter);
 
+	// API docs
 	router.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, null, null, customCss));
 
-	router.use(AuthMiddleWare.isAuth);
+	router.use(AuthenticationMiddleware.isAuth);
 
 	// List Protected APIs:
 	router.use("/tasks", tasksRouter);

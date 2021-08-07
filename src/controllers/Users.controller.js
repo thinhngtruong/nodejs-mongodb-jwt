@@ -29,8 +29,9 @@ const create = async (req, res, next) => {
 		const hashPassword = await bcrypt.hash(password, salt);
 
 		return userService.createUser({ username, password: hashPassword }).then(async (user) => {
-			const accessToken = await jwtHelper.generateToken(user.toJSON(), ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE);
-			const refreshToken = await jwtHelper.generateToken(user.toJSON(), REFRESH_TOKEN_SECRET, REFRESH_TOKEN_LIFE);
+			const userWithRole = await userService.setRolesForUser(user);
+			const accessToken = await jwtHelper.generateToken(userWithRole.toJSON(), ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE);
+			const refreshToken = await jwtHelper.generateToken(userWithRole.toJSON(), REFRESH_TOKEN_SECRET, REFRESH_TOKEN_LIFE);
 
 			return res.status(200).json({ accessToken, refreshToken });
 		});
@@ -78,10 +79,24 @@ const deleteById = async (req, res, next) => {
 	}
 };
 
+const updateRoleByUsername = async (req, res, next) => {
+	const { username } = req.params;
+	const { roles } = req.body;
+	if (roles)
+		try {
+			const user = await userService.findUserByUsername(username)
+			await userService.setRolesForUser(user, roles);
+			res.status(200).json({ message: 'Update role for user successfully' });
+		} catch (err) {
+			next(err)
+		}
+}
+
 module.exports = {
 	create,
 	findAll,
 	findById,
 	findByUsername,
-	deleteById
+	deleteById,
+	updateRoleByUsername
 }

@@ -15,7 +15,7 @@ let isAuth = async (req, res, next) => {
 	if (tokenFromClient) {
 		try {
 			// Decode & verify token
-			
+
 			const decoded = await jwtHelper.verifyToken(tokenFromClient, ACCESS_TOKEN_SECRET);
 			// If token is valid, save token for after actions
 			req.user = decoded;
@@ -34,6 +34,7 @@ let isAuth = async (req, res, next) => {
 		});
 	}
 }
+
 module.exports = {
 	isAuth,
 };
