@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
+    image: String,
 	roles: [
 		{
 			type: mongoose.Schema.Types.ObjectId,

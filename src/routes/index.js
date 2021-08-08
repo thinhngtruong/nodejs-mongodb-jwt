@@ -1,12 +1,12 @@
 const express = require("express");
-const router = express.Router();
-const AuthenticationMiddleware = require("../middleware/AuthenticationMiddleware");
+const fs = require('fs');
 const authRouter = require("./Auth.route");
 const tasksRouter = require("./Tasks.route");
 const usersRouter = require("./Users.route");
 const swaggerUi = require('swagger-ui-express');
-const fs = require('fs');
+const AuthenticationMiddleware = require("../middleware/AuthenticationMiddleware");
 
+const router = express.Router();
 // Config swagger
 const swaggerFile = (process.cwd() + "/swagger/swagger.json");
 const swaggerData = fs.readFileSync(swaggerFile, 'utf8');

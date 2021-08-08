@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require('dotenv');
+const path = require('path');
 
 const initAPIs = require("./routes");
 const { DB_URI } = require("./config/DB.config");
@@ -28,6 +29,9 @@ db.once("open", function () {
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.use('/public', express.static(path.join(__dirname, '../public')))
 
 app.use(LoggerMiddleware);
 

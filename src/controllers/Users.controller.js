@@ -28,13 +28,18 @@ const create = async (req, res, next) => {
 		const salt = await bcrypt.genSalt(10);
 		const hashPassword = await bcrypt.hash(password, salt);
 
-		return userService.createUser({ username, password: hashPassword }).then(async (user) => {
-			const userWithRole = await userService.setRolesForUser(user);
-			const accessToken = await jwtHelper.generateToken(userWithRole.toJSON(), ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE);
-			const refreshToken = await jwtHelper.generateToken(userWithRole.toJSON(), REFRESH_TOKEN_SECRET, REFRESH_TOKEN_LIFE);
+		return userService.createUser({
+			username,
+			password: hashPassword,
+			image: req.file ? req.file.path : undefined,
+		})
+			.then(async (user) => {
+				const userWithRole = await userService.setRolesForUser(user);
+				const accessToken = await jwtHelper.generateToken(userWithRole.toJSON(), ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE);
+				const refreshToken = await jwtHelper.generateToken(userWithRole.toJSON(), REFRESH_TOKEN_SECRET, REFRESH_TOKEN_LIFE);
 
-			return res.status(200).json({ accessToken, refreshToken });
-		});
+				return res.status(200).json({ accessToken, refreshToken });
+			});
 	} catch (err) {
 		next(err)
 	}
