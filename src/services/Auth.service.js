@@ -1,9 +1,9 @@
-const User = require("../models/Users.model");
+const User = require('../models/Users.model');
 
 const findUserByUsername = async (username) => {
-	return User.findOne({ username }).populate('roles', 'name');
-}
+  return User.findOne({ username }).populate('roles', 'name');
+};
 
 module.exports = {
-	findUserByUsername,
+  findUserByUsername,
 };
