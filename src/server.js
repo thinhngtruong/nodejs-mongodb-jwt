@@ -9,7 +9,8 @@ const { initRoles } = require('./helpers/Role.helper');
 
 // middleware
 const LoggerMiddleware = require('./middleware/LoggerMiddleware');
-const ErrorHandlerMiddleware = require('./middleware/ErrorHandlerMiddleware');
+const ErrorHandlerMiddleware = require('./middleware/ErrorHandlerMiddleware').errHandler;
+const UnknownEndpointMiddleware = require('./middleware/ErrorHandlerMiddleware').unknownEndpoint;
 
 dotenv.config();
 
@@ -28,7 +29,10 @@ db.once('open', function () {
 
 const app = express();
 
+app.disable('x-powered-by');
+
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/public', express.static(path.join(__dirname, '../public')));
@@ -36,6 +40,8 @@ app.use('/public', express.static(path.join(__dirname, '../public')));
 app.use(LoggerMiddleware);
 
 initAPIs(app);
+
+app.use(UnknownEndpointMiddleware);
 
 app.use(ErrorHandlerMiddleware);
 
