@@ -21,11 +21,14 @@ const userSchema = new mongoose.Schema({
 
 userSchema.methods.toJSON = function () {
   let user = this.toObject();
+  user.id = user._id.toString();
+  delete user._id;
+  delete user.__v;
+  delete user.password;
   const userRoles = user.roles.map(i => i.name);
   return {
     ...user,
     roles: userRoles,
-    password: undefined
   };
 };
 
